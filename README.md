@@ -1,3 +1,5 @@
+This is fork project of MikanOS
+https://github.com/uchan-nos/mikanos-build
 # mikanos-build
 
 このリポジトリは uchan が開発している教育用 OS [MikanOS](https://github.com/uchan-nos/mikanos) をビルドする手順およびツールを収録しています。
