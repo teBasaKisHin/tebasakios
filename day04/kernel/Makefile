@@ -6,6 +6,8 @@ CXXFLAGS += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone \
 LDFLAGS  += --entry KernelMain -z norelro --image-base 0x100000 --static
 
 
+# source ~/tebasakios/devenv/buildenv.sh
+
 .PHONY: all
 all: $(TARGET)
 

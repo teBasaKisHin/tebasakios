@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stding.h>
+#include <stdint.h>
 
 enum PixelFormat {
     kPixelRGBResv8BitPerColor,
