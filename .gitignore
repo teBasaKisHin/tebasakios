@@ -1,1 +1,4 @@
 *.img
+kernel.elf
+*.o
+.*.d

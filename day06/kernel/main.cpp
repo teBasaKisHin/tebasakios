@@ -6,10 +6,7 @@
 #include "graphics.hpp"
 #include "font.hpp"
 #include "console.hpp"
-
-void* operator new(size_t size, void* buf) { 
-    return buf;
-}
+#include "pci.hpp"
 
 void operator delete(void* obj) noexcept {
 }
@@ -76,11 +73,6 @@ extern "C" void KernelMain(const FrameBufferConfig& frame_buffer_config) {
                 BGRResv8BitPerColorPixelWriter{frame_buffer_config};
             break;
     }
-    for( int x = 0; x < frame_buffer_config.horizontal_resolution; ++x ) {
-        for( int y = 0; y < frame_buffer_config.vertical_resolution; ++y ) {
-            pixel_writer->Write(x, y, {255,124,255});
-        }
-    }
 
     const int kFrameWidth = frame_buffer_config.horizontal_resolution;
     const int kFrameHeight = frame_buffer_config.vertical_resolution;
@@ -90,11 +82,11 @@ extern "C" void KernelMain(const FrameBufferConfig& frame_buffer_config) {
                   {kFrameWidth, kFrameHeight - 50},
                   kDesktopBGColor);
     FillRectangle(*pixel_writer,
-                  {0,kFrameHeight - 50},
+                  {0, kFrameHeight - 50},
                   {kFrameWidth, 50},
                   {1, 8, 17});
     FillRectangle(*pixel_writer,
-                  {0, kFrameWidth, 50},
+                  {0, kFrameHeight - 50},
                   {kFrameWidth / 5, 50},
                   {80, 80, 80});
     DrawRectangle(*pixel_writer,
@@ -115,6 +107,18 @@ extern "C" void KernelMain(const FrameBufferConfig& frame_buffer_config) {
                 pixel_writer->Write(200 + dx, 100 + dy, {255,255,255});
             }
         }
+    }
+
+    auto err = pci::ScanAllBus();
+    printk("ScanAllBus: %s\n", err.Name());
+
+    for(int i = 0; i < pci::num_device; ++i) {
+        const auto& dev = pci::devices[i];
+        auto vendor_id = pci::ReadVendorId(dev.bus, dev.device, dev.function);
+        auto class_code = pci::ReadClassCode(dev.bus, dev.device, dev.function);
+        printk("%d.%d.%d: ven %04x, class %08x, head %02x\n",
+            dev.bus, dev.device, dev.function,
+            vendor_id, class_code, dev.header_type);
     }
     
     while (1) __asm__("hlt");
